@@ -2,6 +2,7 @@
 
 require 'singleton'
 require_relative './account_repository'
+require_relative '../models/account'
 
 # InMemoryAccountRepository
 # implements AccountRepository interface
