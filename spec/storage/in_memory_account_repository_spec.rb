@@ -2,10 +2,10 @@
 
 require_relative '../../app/storage/in_memory_account_repository'
 
-describe InMemoryAccountRepository do
+RSpec.describe InMemoryAccountRepository do
   let(:account_stub) { instance_double('Account', id: 1, events: []) }
   let(:account2_stub) { instance_double('Account', id: 2, events: []) }
-  let(:dummy_account_class) do
+  let(:account_klass) do
     Class.new do
       attr_reader :id
 
@@ -16,7 +16,7 @@ describe InMemoryAccountRepository do
   end
 
   before do
-    stub_const('Account', dummy_account_class)
+    stub_const('Account', account_klass)
   end
 
   subject(:repo) { InMemoryAccountRepository.instance }
