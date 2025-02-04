@@ -9,7 +9,6 @@ RSpec.describe EventProcessor do
 
   before do
     allow(storage).to receive(:find_account).with(account.id).and_return(account)
-    allow(storage).to receive(:save_account)
     allow(storage).to receive(:find_or_create_account).with(account.id).and_return(account)
     allow(account).to receive(:add_event)
   end
@@ -21,7 +20,6 @@ RSpec.describe EventProcessor do
       it 'searchs the account and stores the event' do
         expect(storage).to receive(:find_or_create_account).with(event.destination)
         expect(account).to receive(:add_event).with(event)
-        expect(storage).to receive(:save_account).with(account)
 
         result = described_class.process(storage, event)
         expect(result).to eq([account])
@@ -98,7 +96,6 @@ RSpec.describe EventProcessor do
 
         it 'add a subtraction event to account' do
           expect(account).to receive(:add_event)
-          expect(storage).to receive(:save_account).with(account)
 
           described_class.process(storage, event, calculator: calculator)
         end

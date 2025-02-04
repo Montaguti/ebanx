@@ -10,8 +10,8 @@ class EventProcessor
   STRATEGIES = {
     deposit: lambda { |storage, event, _calculator|
       account = storage.find_or_create_account(event.destination)
+
       account.add_event(event)
-      storage.save_account(account)
 
       [account]
     },
@@ -23,8 +23,6 @@ class EventProcessor
       raise Account::InsufficientFundsError if balance < event.amount
 
       account.add_event(event)
-
-      storage.save_account(account)
 
       [account]
     },
@@ -39,9 +37,6 @@ class EventProcessor
 
       origin.add_event(event)
       destination.add_event(event)
-
-      storage.save_account(origin)
-      storage.save_account(destination)
 
       [origin, destination]
     }
