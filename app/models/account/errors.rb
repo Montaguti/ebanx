@@ -8,8 +8,8 @@ class Account
     end
   end
 
-  # Account::AccountNotFoundError
-  class AccountNotFoundError < StandardError
+  # Account::NotFoundError
+  class NotFoundError < StandardError
     def initialize(msg = 'Account not found')
       super
     end
