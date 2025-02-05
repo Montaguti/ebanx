@@ -11,3 +11,5 @@ gem "rack-test", "~> 2.2"
 gem "rackup", "~> 2.2"
 
 gem "puma", "~> 6.6"
+
+gem "byebug", "~> 11.1"
