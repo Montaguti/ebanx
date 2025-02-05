@@ -19,3 +19,27 @@ After getting green light from our test suite, please submit bellow the source c
 - AGAIN, Keep your code malleable, we may ask for modifications;
 - Use version control, we would love to see your step-by-step process;
 - Take your time, don’t rush it;
+
+
+# How to run the project
+
+- [ ] Clone
+```shell
+git clone git@github.com:Montaguti/ebanx.git
+```
+This project was built using Ruby and Sinatra. Clone it to your environment and navigate to project's root folder. Then, run the following command:
+
+```shell
+bundle install && rackup config.ru -p 3000
+```
+
+## Project structure
+```
+|app/
+||controllers/ - HTTP transport layer
+||models/ - Entities layer
+||services/ - Business logic
+||storage/ - Data layer
+||views/ - Presentation layer
+|rspec/ - Tests
+```
