@@ -8,9 +8,13 @@ require_relative '../storage/in_memory_account_repository'
 
 # ApiController
 class ApiController < Sinatra::Base
-  set :views, File.expand_path('../views', __dir__)
+  configure do
+    set :environment, :production
 
-  get '/reset' do
+    set :views, File.expand_path('../views', __dir__)
+  end
+
+  post '/reset' do
     InMemoryAccountRepository.instance.reset
 
     halt 200, 'OK'
