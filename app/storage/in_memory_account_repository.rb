@@ -35,4 +35,10 @@ class InMemoryAccountRepository
       @accounts[account.id.to_s] = account
     end
   end
+
+  def reset
+    @mutex.synchronize do
+      @accounts = {}
+    end
+  end
 end

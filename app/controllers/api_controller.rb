@@ -10,6 +10,12 @@ require_relative '../storage/in_memory_account_repository'
 class ApiController < Sinatra::Base
   set :views, File.expand_path('../views', __dir__)
 
+  get '/reset' do
+    InMemoryAccountRepository.instance.reset
+
+    halt 200, 'OK'
+  end
+
   get '/balance' do
     balance = account_service.get_balance(params[:account_id])
     balance_response(balance)

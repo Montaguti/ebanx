@@ -38,6 +38,10 @@ RSpec.describe InMemoryAccountRepository do
 
   describe '#find_account' do
     context 'without stored account' do
+      before do
+        repo.reset
+      end
+
       it 'raises Account::NotFoundError for any query' do
         expect { repo.find_account(123) }.to raise_error(Account::NotFoundError)
       end
@@ -56,6 +60,10 @@ RSpec.describe InMemoryAccountRepository do
 
   describe '#find_or_create_account' do
     context 'when account doesn\'t exist' do
+      before do
+        repo.reset
+      end
+
       it 'returns a new account' do
         expect(
           repo.find_or_create_account(account2_stub.id)
@@ -74,6 +82,27 @@ RSpec.describe InMemoryAccountRepository do
       expect(
         repo.find_account(account_stub.id).events
       ).to include(event)
+    end
+  end
+
+  describe '#reset' do
+    before do
+      repo.save_account(account_stub)
+      repo.save_account(Account.new('456'))
+    end
+
+    it 'removes all accounts from the repository' do
+      expect do
+        repo.find_account(account_stub.id)
+      end.not_to raise_error
+
+      repo.reset
+
+      expect { repo.find_account(account_stub.id) }.to raise_error(Account::NotFoundError)
+      expect { repo.find_account('456') }.to raise_error(Account::NotFoundError)
+
+      accounts = repo.instance_variable_get(:@accounts)
+      expect(accounts).to be_empty
     end
   end
 end
