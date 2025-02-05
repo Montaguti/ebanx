@@ -9,7 +9,7 @@ RSpec.describe EventProcessor do
   let(:origin) { instance_double('Account', id: 3, events: []) }
 
   before do
-    allow(storage).to receive(:find_account).with(origin.id).and_return(nil)
+    allow(storage).to receive(:find_account).with(origin.id).and_raise(Account::NotFoundError)
     allow(storage).to receive(:find_account).with(account.id).and_return(account)
     allow(storage).to receive(:find_or_create_account).with(account.id).and_return(account)
     allow(account).to receive(:add_event)

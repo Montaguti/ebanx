@@ -17,7 +17,6 @@ class EventProcessor
     },
     withdraw: lambda { |storage, event, calculator|
       account = storage.find_account(event.origin)
-      raise Account::NotFoundError unless account
 
       balance = calculator.calculate(account)
       raise Account::InsufficientFundsError if balance < event.amount
@@ -28,7 +27,6 @@ class EventProcessor
     },
     transfer: lambda { |storage, event, calculator|
       origin = storage.find_account(event.origin)
-      raise Account::NotFoundError unless origin
 
       balance = calculator.calculate(origin)
       raise Account::InsufficientFundsError if balance < event.amount

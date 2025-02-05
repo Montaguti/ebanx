@@ -1,22 +1,24 @@
 # frozen_string_literal: true
 
+class DummyAccount
+  attr_reader :id, :events
+
+  def initialize(id)
+    @id = id
+    @events = []
+  end
+
+  class NotFoundError < StandardError; end
+end
+
 require_relative '../../app/storage/in_memory_account_repository'
 
 RSpec.describe InMemoryAccountRepository do
-  let(:account_stub) { instance_double('Account', id: 1, events: []) }
-  let(:account2_stub) { instance_double('Account', id: 2, events: []) }
-  let(:account_klass) do
-    Class.new do
-      attr_reader :id
-
-      def initialize(id)
-        @id = id
-      end
-    end
-  end
+  let(:account_stub) { instance_double('Account', id: '1', events: []) }
+  let(:account2_stub) { instance_double('Account', id: '2', events: []) }
 
   before do
-    stub_const('Account', account_klass)
+    stub_const('Account', DummyAccount)
   end
 
   subject(:repo) { InMemoryAccountRepository.instance }
@@ -31,14 +33,13 @@ RSpec.describe InMemoryAccountRepository do
 
   describe 'Singleton' do
     let(:instance2) { InMemoryAccountRepository.instance }
-
     it { is_expected.to equal(instance2) }
   end
 
   describe '#find_account' do
     context 'without stored account' do
-      it 'returns nil for any query' do
-        expect(repo.find_account(123)).to be_nil
+      it 'raises Account::NotFoundError for any query' do
+        expect { repo.find_account(123) }.to raise_error(Account::NotFoundError)
       end
     end
 
@@ -54,7 +55,7 @@ RSpec.describe InMemoryAccountRepository do
   end
 
   describe '#find_or_create_account' do
-    context 'when account doesn\'t exists' do
+    context 'when account doesn\'t exist' do
       it 'returns a new account' do
         expect(
           repo.find_or_create_account(account2_stub.id)

@@ -18,7 +18,10 @@ class InMemoryAccountRepository
   end
 
   def find_account(id)
-    @accounts[id.to_s]
+    account = @accounts[id.to_s]
+    raise Account::NotFoundError unless account
+
+    account
   end
 
   def find_or_create_account(id)
