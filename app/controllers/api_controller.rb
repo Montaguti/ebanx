@@ -48,9 +48,8 @@ class ApiController < Sinatra::Base
   end
 
   def event_json(req)
-    req.body.rewind
     data = req.body.read
-    JSON.parse(data)
+    JSON.parse(data, symbolize_names: true)
   end
 
   def handle_error(error)

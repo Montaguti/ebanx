@@ -38,7 +38,7 @@ module BalanceCalculator
       def adjust_balance(event, account_id)
         if event.origin == account_id
           -event.amount
-        elsif event.destitation == account_id
+        elsif event.destination == account_id
           event.amount
         end
       end

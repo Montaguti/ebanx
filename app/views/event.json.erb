@@ -1,17 +1,17 @@
 <%
-  case @event['type']
+  case @event[:type]
   when 'deposit'
-    balance = @account_service.get_balance(@event['destination'])
-    result = { destination: { id: @event['destination'], balance: balance } }
+    balance = @account_service.get_balance(@event[:destination])
+    result = { destination: { id: @event[:destination], balance: balance.to_f } }
   when 'withdraw'
-    balance = @account_service.get_balance(@event['origin'])
-    result = { origin: { id: @event['origin'], balance: balance } }
+    balance = @account_service.get_balance(@event[:origin])
+    result = { origin: { id: @event[:origin], balance: balance.to_f } }
   when 'transfer'
-    orig_balance = @account_service.get_balance(@event['origin'])
-    dest_balance = @account_service.get_balance(@event['destination'])
+    orig_balance = @account_service.get_balance(@event[:origin])
+    dest_balance = @account_service.get_balance(@event[:destination])
     result = {
-      origin: { id: @event['origin'], balance: orig_balance },
-      destination: { id: @event['destination'], balance: dest_balance }
+      origin: { id: @event[:origin], balance: orig_balance.to_f },
+      destination: { id: @event[:destination], balance: dest_balance.to_f }
     }
   else
     result = { error: 'Unsupported event type' }
