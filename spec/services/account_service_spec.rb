@@ -6,27 +6,50 @@ RSpec.describe AccountService do
   let(:storage) { instance_double('AccountRepository') }
   let(:event_processor) { class_double('EventProcessor') }
   let(:calculator) { class_double('BalanceCalculator::Default') }
+  let(:event_klass) { class_double('Event') }
 
-  let(:event_amount) { 10 }
-  let(:event) { instance_double('Event', type: :deposit, destination: 1, amount: event_amount) }
   let(:account) { instance_double('Account', id: 1, events: []) }
 
-  subject(:service) { described_class.new(storage, event_processor: event_processor, calculator: calculator) }
+  let(:event_amount) { 10 }
+  let(:event_params) do
+    {
+      type: :deposit,
+      destination: account.id,
+      amount: event_amount
+    }
+  end
+  let(:event) do
+    instance_double('Event', type: :deposit, destination: 1, amount: event_amount)
+  end
+
+  subject(:service) do
+    described_class.new(storage,
+                        event_klass: event_klass,
+                        event_processor: event_processor,
+                        calculator: calculator)
+  end
 
   describe '#handle_event' do
+    before do
+      allow(event_klass).to receive(:new)
+        .with(event_params).and_return(event)
+    end
+
     context 'when event processing succeeds' do
       before do
         allow(event_processor).to receive(:process)
-          .with(storage, event, calculator: calculator)
+          .with(storage, anything, calculator: calculator)
           .and_return([account])
+
         allow(storage).to receive(:save_account).with(account)
       end
 
       it 'processes the event and saves the account' do
-        result = service.handle_event(event)
+        result = service.handle_event(event_params)
 
         expect(result).to eq([account])
-        expect(event_processor).to have_received(:process).with(storage, event, calculator: calculator)
+        expect(event_processor).to have_received(:process)
+          .with(storage, event, calculator: calculator)
         expect(storage).to have_received(:save_account).with(account)
       end
     end
@@ -38,7 +61,7 @@ RSpec.describe AccountService do
       end
 
       it 'propagates errors' do
-        expect { service.handle_event(event) }.to raise_error(Account::NotFoundError)
+        expect { service.handle_event(event_params) }.to raise_error(Account::NotFoundError)
       end
     end
   end
