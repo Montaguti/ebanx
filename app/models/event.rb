@@ -15,8 +15,8 @@ class Event
 
   def initialize(type:, amount:, destination: nil, origin: nil)
     @type = validate_type(type)
-    @destination = destination&.to_s
-    @origin = origin&.to_s
+    @destination = destination
+    @origin = origin
     @amount = BigDecimal(amount.to_s)
     @timestamp = Time.now
     @uuid = SecureRandom.uuid
