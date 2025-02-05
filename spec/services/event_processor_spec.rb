@@ -6,8 +6,10 @@ RSpec.describe EventProcessor do
   let(:storage) { instance_double('AccountRepository') }
   let(:account) { instance_double('Account', id: 1, events: []) }
   let(:calculator) { class_double('BalanceCalculator::Default') }
+  let(:origin) { instance_double('Account', id: 3, events: []) }
 
   before do
+    allow(storage).to receive(:find_account).with(origin.id).and_return(nil)
     allow(storage).to receive(:find_account).with(account.id).and_return(account)
     allow(storage).to receive(:find_or_create_account).with(account.id).and_return(account)
     allow(account).to receive(:add_event)
@@ -27,16 +29,11 @@ RSpec.describe EventProcessor do
     end
 
     context 'with :transfer event' do
-      let(:origin) { double('Account', id: 3, events: []) }
       let(:event) do
         instance_double('Event', type: :transfer, destination: account.id, origin: origin.id, amount: 10)
       end
 
       context 'when the origin doesn\'t exists' do
-        before do
-          allow(storage).to receive(:find_account).with(origin.id).and_return(nil)
-        end
-
         it 'raises Account::NotFoundError' do
           expect { described_class.process(storage, event) }.to raise_error(Account::NotFoundError)
         end
@@ -56,7 +53,7 @@ RSpec.describe EventProcessor do
 
       context 'with sufficient funds' do
         before do
-          allow(calculator).to receive(:calculate).with(origin.id, origin.events).and_return(20)
+          allow(calculator).to receive(:calculate).with(origin).and_return(20)
         end
 
         it 'trasnfer funds between accounts' do
@@ -71,19 +68,19 @@ RSpec.describe EventProcessor do
     end
 
     context 'with :withdraw event' do
-      let(:event) { instance_double('Event', type: :withdraw, origin: account.id, amount: 10) }
+      let(:event) { instance_double('Event', type: :withdraw, origin: origin.id, amount: 10) }
 
       context 'when account doesn\'t exists' do
-        before do
-          allow(storage).to receive(:find_account).with(event.origin).and_return(nil)
-        end
-
         it 'raises Account::NotFoundError' do
           expect { described_class.process(storage, event) }.to raise_error(Account::NotFoundError)
         end
       end
 
       context 'when account doesn\'t has funds' do
+        before do
+          allow(storage).to receive(:find_account).and_return(origin)
+        end
+
         it 'raises Account::InsufficientFundsError' do
           expect { described_class.process(storage, event) }.to raise_error(Account::InsufficientFundsError)
         end
@@ -91,11 +88,12 @@ RSpec.describe EventProcessor do
 
       context 'with sufficient funds' do
         before do
-          allow(calculator).to receive(:calculate).with(event.origin, account.events).and_return(100)
+          allow(storage).to receive(:find_account).and_return(origin)
+          allow(calculator).to receive(:calculate).with(origin).and_return(100)
         end
 
         it 'add a subtraction event to account' do
-          expect(account).to receive(:add_event)
+          expect(origin).to receive(:add_event)
 
           described_class.process(storage, event, calculator: calculator)
         end

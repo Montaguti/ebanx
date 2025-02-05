@@ -8,9 +8,11 @@ module BalanceCalculator
   # BalanceCalculator::Default
   class Default < Interface
     class << self
-      def calculate(account_id, events)
+      def calculate(account)
+        events = account.events
+
         events.sum do |event|
-          calculate_event_balance(event, account_id)
+          calculate_event_balance(event, account.id)
         end
       end
 

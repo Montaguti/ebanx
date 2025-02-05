@@ -72,11 +72,11 @@ RSpec.describe AccountService do
     context 'when account exists' do
       before do
         allow(storage).to receive(:find_account).with(account2.id).and_return(account2)
-        allow(calculator).to receive(:calculate).with(account2.id, account2.events).and_return(event_amount)
+        allow(calculator).to receive(:calculate).with(account2).and_return(event_amount)
       end
 
       it 'returns calculated balance' do
-        balance = service.get_balance(account2.id, account2.events)
+        balance = service.get_balance(account2.id)
 
         expect(balance).to eq(event_amount)
       end
@@ -88,7 +88,7 @@ RSpec.describe AccountService do
       end
 
       it 'returns nil' do
-        balance = service.get_balance(account2.id, account2.events)
+        balance = service.get_balance(account2.id)
 
         expect(balance).to be_nil
       end

@@ -19,7 +19,7 @@ class EventProcessor
       account = storage.find_account(event.origin)
       raise Account::NotFoundError unless account
 
-      balance = calculator.calculate(account.id, account.events)
+      balance = calculator.calculate(account)
       raise Account::InsufficientFundsError if balance < event.amount
 
       account.add_event(event)
@@ -30,7 +30,7 @@ class EventProcessor
       origin = storage.find_account(event.origin)
       raise Account::NotFoundError unless origin
 
-      balance = calculator.calculate(origin.id, origin.events)
+      balance = calculator.calculate(origin)
       raise Account::InsufficientFundsError if balance < event.amount
 
       destination = storage.find_or_create_account(event.destination)

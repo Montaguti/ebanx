@@ -4,7 +4,7 @@ require_relative './balance_calculator/default'
 require_relative './event_processor'
 require_relative '../models/event'
 
-# AccountService interface wich depends storage mechanism
+# AccountService
 class AccountService
   def initialize(storage, event_klass: Event, event_processor: EventProcessor, calculator: BalanceCalculator::Default)
     @storage = storage
@@ -13,11 +13,11 @@ class AccountService
     @event_klass = event_klass
   end
 
-  def get_balance(account_id, events)
+  def get_balance(account_id)
     account = @storage.find_account(account_id)
     return unless account
 
-    @calculator.calculate(account_id, events)
+    @calculator.calculate(account)
   end
 
   def handle_event(event_params)

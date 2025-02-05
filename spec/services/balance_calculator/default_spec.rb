@@ -9,20 +9,21 @@ RSpec.describe BalanceCalculator::Default do
 
   context 'predefined balance of 50' do
     let(:deposits) { [deposit10] * 5 }
+    let(:account) { instance_double('Account', id: 1, events: deposits) }
 
     it 'calculates the balance correctly' do
-      balance = described_class.calculate(1, deposits)
+      balance = described_class.calculate(account)
 
       expect(balance).to eq(50)
     end
 
     context 'when there is some withdrawls' do
       before do
-        deposits.concat([withdraw1] * 10)
+        account.events.concat([withdraw1] * 10)
       end
 
       it 'decrease the balance by 10' do
-        balance = described_class.calculate(1, deposits)
+        balance = described_class.calculate(account)
 
         expect(balance).to eq(40)
       end
@@ -30,11 +31,11 @@ RSpec.describe BalanceCalculator::Default do
 
     context 'when there is some transfers' do
       before do
-        deposits.concat([transfer2] * 5)
+        account.events.concat([transfer2] * 5)
       end
 
       it 'decreases the balance by 10' do
-        balance = described_class.calculate(1, deposits)
+        balance = described_class.calculate(account)
 
         expect(balance).to eq(40)
       end
