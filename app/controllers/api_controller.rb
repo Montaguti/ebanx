@@ -17,7 +17,7 @@ class ApiController < Sinatra::Base
   end
 
   get '/balance' do
-    balance = account_service.get_balance(params[:account_id])
+    balance = account_service.get_balance(params['account_id'])
     balance_response(balance)
   rescue StandardError => e
     handle_error(e)
@@ -40,7 +40,7 @@ class ApiController < Sinatra::Base
   private
 
   def account_service
-    @account_service ||= AccountService.new(respoitory: InMemoryAccountRepository.instance)
+    @account_service ||= AccountService.new(InMemoryAccountRepository.instance)
   end
 
   def balance_response(balance)
